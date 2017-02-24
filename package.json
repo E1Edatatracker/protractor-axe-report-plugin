@@ -1,0 +1,40 @@
+{
+  "name": "protractor-axe-report-plugin",
+  "version": "1.0.0",
+  "bugs": {
+    "url": "https://github.com/angular/E1Edatatracker/protractor-axe-report-plugin/issues"
+  },
+  "dependencies": {
+    "axe-core": "^2.0.5",
+    "axe-webdriverjs": "^0.2.0",
+    "selenium-webdriver": "^2.46.1"
+  },
+  "description": "A protractor plugin that generates an aXe accessibility report",
+  "devDependencies": {
+    "protractor": "^4.0.10"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/E1Edatatracker/protractor-axe-report-plugin.git"
+  },
+  "author": "Sacha Manson-Smith <smansonsmith@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/E1Edatatracker/protractor-axe-report-plugin/issues"
+  },
+  "homepage": "https://github.com/E1Edatatracker/protractor-axe-report-plugin#readme",
+  "keywords": [
+    "angular",
+    "test",
+    "testing",
+    "webdriver",
+    "webdriverjs",
+    "protractor",
+    "protractor-plugin",
+    "accessibility"
+  ]
+}
