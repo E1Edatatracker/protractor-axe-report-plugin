@@ -12,6 +12,7 @@ var AxeBuilder = require('axe-webdriverjs');
  *        displayPasses: true|false,
  *        displayViolations: true|false,
  *        standardsToReport: ['wcag2a', 'wcag2aa'],
+ *        ignoreAxeFailures: true|false,
  *        package: 'protractor-axe-report-plugin',
  *      }]
  *    }
@@ -38,6 +39,7 @@ runAxeTestWithSelector = function(testName, driver, selector) {
 }
 
 var allTestResults = [];
+var currentTestResults = [];
 var resultsByTag = {};
 
 const green = '\x1b[32m';
@@ -49,6 +51,7 @@ const indent = '       ';
 
 function addResults(testName, url, results) {
   allTestResults.push({name: testName, url: url, axeResults: results});
+  currentTestResults.push({name: testName, url: url, axeResults: results});
 }
 
 function displayViolation(result, displayHelpUrl, displayContext) {
@@ -138,30 +141,27 @@ function areAnyStandardsReportable(reportedStandards, standardsToReport) {
   })
 }
 
-function filterTestResultsByStandard(testResults, standardsToReport)
+function filterTestResultByStandard(result, standardsToReport)
 {
-  testResults.forEach(function(result) {
+  // FIrst, remove issues which are tagged with standards that we don't want to report on
+  result.axeResults.passes = result.axeResults.passes.filter(function(axeResult) {
+    return areAnyStandardsReportable(axeResult.tags, standardsToReport);
+  });
 
-    // FIrst, remove issues which are tagged with standards that we don't want to report on
-    result.axeResults.passes = result.axeResults.passes.filter(function(axeResult) {
-      return areAnyStandardsReportable(axeResult.tags, standardsToReport);
-    });
+  result.axeResults.violations = result.axeResults.violations.filter(function(axeResult) {
+    return areAnyStandardsReportable(axeResult.tags, standardsToReport);
+  });
 
-    result.axeResults.violations = result.axeResults.violations.filter(function(axeResult) {
-      return areAnyStandardsReportable(axeResult.tags, standardsToReport);
-    });
-
-    // Next, fromt he remaining issues, remove any references to tags which we don't want to report on
-    result.axeResults.passes.forEach(function(axeResult) {
-      axeResult.tags = axeResult.tags.filter(function(tag) {
-        return isStandardReportable(tag, standardsToReport);
-      })
+  // Next, fromt he remaining issues, remove any references to tags which we don't want to report on
+  result.axeResults.passes.forEach(function(axeResult) {
+    axeResult.tags = axeResult.tags.filter(function(tag) {
+      return isStandardReportable(tag, standardsToReport);
     })
+  })
 
-    result.axeResults.violations.forEach(function(axeResult) {
-      axeResult.tags = axeResult.tags.filter(function(tag) {
-        return isStandardReportable(tag, standardsToReport);
-      })
+  result.axeResults.violations.forEach(function(axeResult) {
+    axeResult.tags = axeResult.tags.filter(function(tag) {
+      return isStandardReportable(tag, standardsToReport);
     })
   })
 }
@@ -178,6 +178,7 @@ function reportStandardsMessage(standardsToReport) {
 
 function displayResultsByStandard(pluginConfig) {
   // Now log out our overall maps of passes and violations. 
+  console.log("");
   console.log("--- Accessibilty test results by standard ---");
   reportStandardsMessage(pluginConfig.standardsToReport);
 
@@ -248,23 +249,66 @@ function displayResultsByPage(pluginConfig) {
 function displayResults() {
   var pluginConfig = this.config;
 
+  // Remove any results that we are not interested in
+  allTestResults.forEach(function(result) {
+    filterTestResultByStandard(result, pluginConfig.standardsToReport);
+  })
+
+  var anyFailure = displayResultsByStandard(pluginConfig, allTestResults);
+  displayResultsByPage(pluginConfig, allTestResults);
+}
+
+function postTest(passed, testInfo) {
+  var pluginConfig = this.config;
+  var context = this;
+
+  if(pluginConfig.ignoreAxeFailures) {
+    return;
+  }
+
+  var testHeader = 'aXe - ';
+
+  // Process the result to remove any standards that we are not interested in
+  currentTestResults.forEach(function(result) {
+    filterTestResultByStandard(result, pluginConfig.standardsToReport);
+  });
+
+  // If we have > 0 violations, the test fails
+  // If we have > 0 passes, log a pass
+  // If we had 0 passes and 0 violations, we can't really say whether this test passed or failed, so say nothing.
+  var passCount = 0;
+  var violationCount = 0;
+
+  currentTestResults.forEach(function(result) {
+    passCount += result.axeResults.passes.length;
+    violationCount += result.axeResults.violations.length;
+  });
+
+  if(violationCount > 0) {
+    // Ideally we'd just log the errorMessage as specName, but the test doesn't let us match by specName - just by error message
+    var errorMessage = testHeader + testInfo.category + " - " + testInfo.name;
+    context.addFailure(errorMessage, {specName: errorMessage});
+  } else if (passCount > 0) {
+    context.addSuccess({specName: testHeader + testInfo.category + " - " + testInfo.name});
+  }
+
+  // Clear out the current test results, ready for the next test
+  currentTestResults = [];
+}
+
+function onPrepare() {
+  var pluginConfig = this.config;
+
   // Set the default values for displaying results
+  pluginConfig.ignoreAxeFailures = getDefault(pluginConfig.ignoreAxeFailures, false);
   pluginConfig.displayHelpUrl = getDefault(pluginConfig.displayHelpUrl, true);
   pluginConfig.displayContext = getDefault(pluginConfig.displayContext, true);
   pluginConfig.displayPasses = getDefault(pluginConfig.displayPasses, true);
   pluginConfig.displayViolations = getDefault(pluginConfig.displayViolations, true);
   pluginConfig.standardsToReport = getDefault(pluginConfig.standardsToReport, []);
-
-  filterTestResultsByStandard(allTestResults, pluginConfig.standardsToReport);
-  var anyFailure = displayResultsByStandard(pluginConfig, allTestResults);
-  displayResultsByPage(pluginConfig, allTestResults);
-
-  // What do we return from this method to get protractor to exit with a non-zero status code? 
-  // Throwing an exception doesn't work
-  // if(anyFailure) {
-  //   throw new Error("Failures were detected reporting against standards");
-  // }
 }
 
 // Export
+exports.onPrepare = onPrepare;
 exports.postResults = displayResults;
+exports.postTest = postTest;

@@ -5,12 +5,12 @@ This package is a derivation of the [protractor-accessibility-plugin](https://gi
 
 This plugin only uses the aXe Accessibility Engine, and can generate accessibility reports from any point during the test run. Key features:
 
-*  Make a call to `runAxeTest(testName, url, driver)` once the webdriver has loaded the page under test, and you will get a report for that page. Example:
+*  Make a call to `runAxeTest(testName, driver)` once the webdriver has loaded the page under test, and you will get a report for that page. Example:
 
 
 ```js
 it('Check accessibility', function() {
-	runAxeTest('Signin page', browser.getCurrentUrl(), browser.driver);
+	runAxeTest('Signin page', browser.driver);
 });
 ```
 
@@ -26,7 +26,7 @@ Output:
  Pass: ARIA roles used must conform to valid values 
 ```
 
-* You can also use `runAxeTestWithSelector(testName, url, driver, selector)` specify the CSS selector to use to get just a part of the page (handy for testing modal dialogs):
+* You can also use `runAxeTestWithSelector(testName, driver, selector)` specify the CSS selector to use to get just a part of the page (handy for testing modal dialogs):
 
 ```js
   it('myDetails click', function() {
@@ -35,7 +35,7 @@ Output:
     expect(mainPage.modalDialog.isDisplayed()).toBe(true);
     expect(element(by.id('healthcareProfessionalDetailsForm')).isDisplayed()).toBe(true);
 
-    runAxeTestWithSelector('Clinician details', browser.getCurrentUrl(), browser.driver, '.modal-dialog');
+    runAxeTestWithSelector('Clinician details', browser.driver, '.modal-dialog');
   });
 ```
 
@@ -62,6 +62,8 @@ Output:
  Pass: Elements must have sufficient color contrast (1 pass, 0 fail)
  Fail: Zooming and scaling must not be disabled (0 pass, 1 fail)
 ```
+
+* As long as ignoreAxeFailures is not true, any aXe failures will cause the whole test to fail. 
 
 * And finally, you can specify which standards you want to report on, and it will hide any issues (passes or violations) related to standards which are not specified. For instance, if I specify `standardsToReport: ['wcag2aa']` in the plugin config, I would get an output like this:
 
@@ -96,17 +98,16 @@ Enable this plugin in your config file:
     exports.config = {
 	    ...
 	    plugins: [{
-	        displayHelpUrl: true|false,
-	        displayContext: true|false,
-	        displayPasses: true|false,
-	        displayViolations: true|false,
-	        standardsToReport: ['wcag2a', 'wcag2aa']
+	        displayHelpUrl: true|false, // Displays the aXe help URL along with the error. Defaults to true. 
+	        displayContext: true|false, // Displays the HTML of interest. Defaults to true.
+	        displayPasses: true|false, // Display pass results. Defaults to true.
+	        displayViolations: true|false, // Display vioaltions. Defaults to true.
+	        standardsToReport: ['wcag2a', 'wcag2aa'], // A list of standards to report on. If empty, reports on all standards.
+	        ignoreAxeFailures: true|false, // If true, aXe failures won't cause the whole test to fail. Defaults to false
 	        package: 'protractor-axe-report-plugin',
 	    }]
 	}
 ```
 
-# To do
-It would be great to make the test run return a non-zero exit code if the accessibility report flagged any violations - this way you could (eg) configure it to report on `wcag2a` and `wcag2aa`, and run it as part of your CI tests - any issues would be flagged immediately. If you can make this happen, pleasre raise a PR and i'll be your friend forever! :-)
-
-Also, this is my first NPM package so please be gentle with me! If you've got any feedback about how I can make it better please let me know - thanks.
+# A request...
+This is my first NPM package so please be gentle with me! If you've got any feedback about how I can make it better please let me know - thanks.

@@ -115,6 +115,7 @@ var CommandlineTest = function(command) {
       var actualErrors = [];
       var duration = 0;
       testOutput.forEach(function(specResult) {
+
         duration += specResult.duration;
         specResult.assertions.forEach(function(assertion) {
           if (!assertion.passed) {
