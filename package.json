@@ -36,5 +36,9 @@
     "protractor",
     "protractor-plugin",
     "accessibility"
-  ]
+  ],
+  "scripts": {
+    "start": "httpster -d testapp/ -p `node -p 'process.env.HTTP_PORT || require(\"./spec/environment\").webServerDefaultPort'`",
+    "test": "node test.js"
+  }
 }

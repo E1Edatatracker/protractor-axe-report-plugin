@@ -11,7 +11,8 @@ var AxeBuilder = require('axe-webdriverjs');
  *        displayContext: true|false,
  *        displayPasses: true|false,
  *        displayViolations: true|false,
- *        standardsToReport: ['wcag2a', 'wcag2aa']
+ *        standardsToReport: ['wcag2a', 'wcag2aa'],
+ *        package: 'protractor-axe-report-plugin',
  *      }]
  *    }
  *
@@ -19,20 +20,20 @@ var AxeBuilder = require('axe-webdriverjs');
 
 // Runs axe test against the current page loaded by the webdriver
 // Global method, accessible from tests. 
-runAxeTest = function(testName, url, driver) {
+runAxeTest = function(testName, driver) {
   AxeBuilder(driver)
     .analyze(function (results) {
-      addResults(testName, url, results);
+      addResults(testName, '', results);
     });
 }
 
 // Runs axe test against the selector on the current page loaded by the webdriver, 
 // Global method, accessible from tests. 
-runAxeTestWithSelector = function(testName, url, driver, selector) {
+runAxeTestWithSelector = function(testName, driver, selector) {
   AxeBuilder(driver)
     .include(selector)
     .analyze(function (results) {
-      addResults(testName, url, results);
+      addResults(testName, '', results);
     });
 }
 
@@ -226,11 +227,8 @@ function displayResultsByPage(pluginConfig) {
   reportStandardsMessage(pluginConfig.standardsToReport);
 
   allTestResults.forEach(function(testResult) {
-    testResult.url.then(function(url) {
-
       console.log("");
       console.log(normalColor,"Test:", testResult.name);
-      console.log(normalColor,"URL: ", url);
       console.log(normalColor,"     ", getSummaryString(testResult.axeResults.passes.length, testResult.axeResults.violations.length));
 
       if(pluginConfig.displayPasses) {
@@ -245,7 +243,6 @@ function displayResultsByPage(pluginConfig) {
         });
       }
     });
-  });
 }
 
 function displayResults() {
