@@ -22,20 +22,26 @@ var AxeBuilder = require('axe-webdriverjs');
 // Runs axe test against the current page loaded by the webdriver
 // Global method, accessible from tests. 
 runAxeTest = function(testName, driver) {
-  AxeBuilder(driver)
-    .analyze(function (results) {
-      addResults(testName, '', results);
-    });
+  return new Promise((resolve, reject) => {
+    AxeBuilder(driver)
+      .analyze(function (results) {
+        addResults(testName, '', results);
+        resolve(results);
+      });
+  });
 }
 
 // Runs axe test against the selector on the current page loaded by the webdriver, 
 // Global method, accessible from tests. 
 runAxeTestWithSelector = function(testName, driver, selector) {
-  AxeBuilder(driver)
-    .include(selector)
-    .analyze(function (results) {
-      addResults(testName, '', results);
-    });
+  return new Promise((resolve, reject) => {
+    AxeBuilder(driver)
+      .include(selector)
+      .analyze(function (results) {
+        addResults(testName, '', results);
+        resolve(results);
+      });
+  });
 }
 
 var allTestResults = [];
