@@ -108,6 +108,10 @@ Enable this plugin in your config file:
 	    }]
 	}
 ```
+# Testing
+- Install requirements. I prefer `yarn` so I do `yarn install`
+- Start the local server: `npm start`
+- Run the tests: `npm test`
 
 # A request...
 This is my first NPM package so please be gentle with me! If you've got any feedback about how I can make it better please let me know - thanks.
