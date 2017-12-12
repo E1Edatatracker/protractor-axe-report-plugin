@@ -37,6 +37,7 @@ const indent = '  ';
 
 function setup() {
   browser.runAxeTest = runAxeTest;
+  browser.runAxeTestWithSelector = runAxeTestWithSelector;
 }
 
 function onPrepare() {
