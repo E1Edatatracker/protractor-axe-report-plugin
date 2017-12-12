@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Accessibility Report for {{startCase browserName}}</title>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      line-height: 22px;
+      color: #333;
+    }
+
+    li {
+      margin-bottom: 15px;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      overflow: auto;
+    }
+
+    .page {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 25px;
+    }
+
+    .counts {
+      margin-top: 30px;
+      font-size: 20px;
+    }
+
+    .count {
+      display: inline-block;
+      padding: 5px;
+      border-radius: 5px;
+      border: 1px solid #eee;
+    }
+
+    .clean-list {
+      margin-left: 0;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .results-list {
+      margin-top: 30px;
+    }
+
+    .result {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #eee;
+    }
+
+    .result-description {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .error {
+      color: #721c24;
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+
+    .success {
+      color: #155724;
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page">
+    <h1>Accessibility Report for {{startCase browserName}}</h1>
+
+    {{#each testResults}}
+      <hr />
+      <h2>{{name}}</h2>
+
+      <p class="counts">
+        <span class="count error">{{axeResults.violations.length}} violation(s)</span>
+        <span class="count success">{{axeResults.passes.length}} passes(s)</span>
+      </p>
+
+      <ul class="clean-list results-list">
+        {{#if ../displayViolations}}
+        {{#each axeResults.violations}}
+          <li class="result error">
+            <p class="result-description">{{startCase impact}}: {{description}}</p>
+            <p>{{id}} [{{commaDelimitedList tags}}] (<a href="helpUrl" target="_top">{{helpUrl}}</a>)</p>
+            <ul>
+              {{#each nodes}}
+                <li><code>{{html}}</code> (select with <code>{{target}}</code>)</li>
+              {{/each}}
+            </ul>
+          </li>
+        {{/each}}
+        {{/if}}
+        {{#if ../displayPasses}}
+        {{#each axeResults.passes}}
+        <li class="result success">
+          <p class="result-description">{{description}}</p>
+          <p>{{id}} [{{commaDelimitedList tags}}] ({{link helpUrl helpUrl}})</p>
+        </li>
+        {{/each}}
+        {{/if}}
+      </ul>
+    {{/each}}
+  </div>
+</body>
+</html>
