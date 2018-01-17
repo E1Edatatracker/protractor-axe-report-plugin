@@ -318,3 +318,5 @@ function onPrepare() {
 exports.onPrepare = onPrepare;
 exports.postResults = displayResults;
 exports.postTest = postTest;
+exports.runAxeTest = runAxeTest;
+exports.runAxeTestWithSelector = runAxeTestWithSelector;
