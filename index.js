@@ -23,7 +23,7 @@ var AxeBuilder = require('axe-webdriverjs');
 // Global method, accessible from tests. 
 runAxeTest = function(testName, driver) {
   return new Promise((resolve, reject) => {
-    AxeBuilder(driver)
+    AxeBuilder(driver).options(this.config.axe)
       .analyze(function (results) {
         addResults(testName, '', results);
         resolve(results);
