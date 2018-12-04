@@ -35,7 +35,7 @@ runAxeTest = function(testName, driver) {
 // Global method, accessible from tests. 
 runAxeTestWithSelector = function(testName, driver, selector) {
   return new Promise((resolve, reject) => {
-    AxeBuilder(driver)
+    AxeBuilder(driver).options(this.config.axe)
       .include(selector)
       .analyze(function (results) {
         addResults(testName, '', results);
