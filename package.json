@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "dependencies": {
     "axe-core": "^3.2.2",
-    "axe-webdriverjs": "^0.2.0",
+    "axe-webdriverjs": "^2.2.0",
     "selenium-webdriver": "^2.46.1"
   },
   "description": "A protractor plugin that generates an aXe accessibility report",
