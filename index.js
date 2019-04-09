@@ -23,7 +23,9 @@ var AxeBuilder = require('axe-webdriverjs');
 // Global method, accessible from tests. 
 runAxeTest = function(testName, driver) {
   return new Promise((resolve, reject) => {
-    AxeBuilder(driver).options(this.config.axe)
+    AxeBuilder(driver)
+      .options(this.config.axe)
+      .exclude(this.config.exclude)
       .analyze(function (results) {
         addResults(testName, '', results);
         resolve(results);
@@ -35,7 +37,9 @@ runAxeTest = function(testName, driver) {
 // Global method, accessible from tests. 
 runAxeTestWithSelector = function(testName, driver, selector) {
   return new Promise((resolve, reject) => {
-    AxeBuilder(driver).options(this.config.axe)
+    AxeBuilder(driver)
+      .options(this.config.axe)
+      .exclude(this.config.exclude)
       .include(selector)
       .analyze(function (results) {
         addResults(testName, '', results);
