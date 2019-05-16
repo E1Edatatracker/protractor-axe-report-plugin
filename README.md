@@ -9,8 +9,10 @@ This plugin only uses the aXe Accessibility Engine, and can generate accessibili
 
 
 ```js
+import { runAxeTest } from 'protractor-axe-report-plugin';
+
 it('Check accessibility', function() {
-	runAxeTest('Signin page', browser.driver);
+    runAxeTest('Signin page', browser.driver);
 });
 ```
 

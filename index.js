@@ -24,6 +24,8 @@ var AxeBuilder = require('axe-webdriverjs');
 runAxeTest = function(testName, driver) {
   return new Promise((resolve, reject) => {
     AxeBuilder(driver)
+      .options(this.config.axe)
+      .exclude(this.config.exclude)
       .analyze(function (results) {
         addResults(testName, '', results);
         resolve(results);
@@ -36,6 +38,8 @@ runAxeTest = function(testName, driver) {
 runAxeTestWithSelector = function(testName, driver, selector) {
   return new Promise((resolve, reject) => {
     AxeBuilder(driver)
+      .options(this.config.axe)
+      .exclude(this.config.exclude)
       .include(selector)
       .analyze(function (results) {
         addResults(testName, '', results);
@@ -318,3 +322,5 @@ function onPrepare() {
 exports.onPrepare = onPrepare;
 exports.postResults = displayResults;
 exports.postTest = postTest;
+exports.runAxeTest = runAxeTest;
+exports.runAxeTestWithSelector = runAxeTestWithSelector;
